@@ -1,0 +1,116 @@
+---
+apiVersion: ran.openshift.io/v1
+kind: SiteConfig
+metadata:
+  name: "ptnr3"
+  namespace: "ptnr3"
+spec:
+  baseDomain: "cert2.bos2.lab"
+  pullSecretRef:
+    name: "ptnr3-pull-secret"
+  clusterImageSetNameRef: "active-ocp-version" 
+  sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCnKWvG7Pi1e2+wZ/3Jn6HqDyVy10VfIQyuKxlzYht13rF2CfrRUb1P4Mv+qQjP+RKK5WCIoc3w4JYPOvelnwvvX8Umuhz0qh1KZgy1z9Vy8qjkzbSs6T0sw/mZowgA9GRbP5uzwXvh9P5pByN4Tt2602ew7OAUm3THtuob8oGs4ahNu79jx49eI/I95LlHUaVKiLNwFPjlxDXpxVtQ8ZhKD+M1K8pwPbnK/O5KojCi7ynPSBpmaaYP+EjvR35fptaeKHpGislEA+jBpwxOyiEgpWeGEKcDlZGHZ3DQ1ThNdt/GyuNYRFmbDs1zx9oK6eWK/u4NdyPLWI5Krr6g1bE0Sugv+uhsE8PRHJ4SAtNa8dTNFQ8ARIJSSsKeqRe+3CcDQOGhpIgFjCVtbpblNyjNEKG/XNLVcJJhjbWm5bIr8AzEk/oCSB/eCct0bI7pYO36T/f2rUDaYGRWVUARoUOoKShL27B2LzvXTT82dgTT2mCxIQhpBGdIqAunUVJdWxs= redhat@redhat-users.cert2.bos2.lab"
+  clusters:
+  - clusterName: "ptnr3"
+    networkType: "OVNKubernetes"
+    # It is strongly recommended to include crun manifests as part of the additional install-time manifests for 4.13+.
+    # The crun manifests can be obtained from source-crs/optional-extra-manifest/ and added to the git repo ie.3node-extra-manifest.
+    # extraManifestPath: 3node-extra-manifest
+    clusterLabels:
+      sites : "certpod2"
+      cluster: "ptnr3"
+    clusterNetwork:
+      - cidr: 10.128.0.0/14
+        hostPrefix: 23
+    # For 3-node and standard clusters with static IPs, the API and Ingress IPs must be configured here
+    apiVIP:  192.168.74.139
+    ingressVIP:  192.168.74.140
+    serviceNetwork:
+      - 172.22.0.0/16
+    additionalNTPSources:
+      - 192.168.74.134
+    # Optionally; This can be used to override the KlusterletAddonConfig that is created for this cluster:
+    #crTemplates:
+    #  KlusterletAddonConfig: "KlusterletAddonConfigOverride.yaml"
+    # Optionally; This can be used to to configure desired BIOS setting on all nodes in this cluster:
+    #biosConfigRef:
+    #  filePath: "example-hw.profile"
+    nodes:
+      - hostName: "ranworker1.ptnr3.cert2.bos2.lab"
+        role: "master"
+        nodeLabels:
+          node-role.kubernetes.io/master:
+        bmcAddress: "redfish-virtualmedia://192.168.73.25/redfish/v1/Systems/1"
+        bmcCredentialsName:
+          name: "masters-bmh-secret"
+        bootMACAddress: "b4:96:91:d8:b7:bc"
+        # Use UEFISecureBoot to enable secure boot for this node
+        bootMode: "UEFI"
+        rootDeviceHints:
+          hctl: "1:0:0:0"
+        nodeNetwork:
+          interfaces:
+            - name: ens10f0
+              macAddress: "b4:96:91:d8:b7:bc"
+          config:
+            interfaces:
+              - name: ens10f0
+                type: ethernet
+                state: up
+                ipv4:
+                  enabled: true
+                  dhcp: true
+                ipv6:
+                  enabled: false
+
+      - hostName: "ranworker2.ptnr3.cert2.bos2.lab"
+        role: "master"
+        nodeLabels:
+          node-role.kubernetes.io/master:
+        bmcAddress: "redfish-virtualmedia://192.168.73.24/redfish/v1/Systems/1"
+        bmcCredentialsName:
+          name: "masters-bmh-secret"
+        bootMACAddress: "b4:96:91:d6:c4:b0"
+        # Use UEFISecureBoot to enable secure boot for this node
+        bootMode: "UEFI"
+        rootDeviceHints:
+          hctl: "1:0:0:0"
+        nodeNetwork:
+          interfaces:
+            - name: ens10f0
+              macAddress: "b4:96:91:d6:c4:b0"
+          config:
+            interfaces:
+              - name: ens10f0
+                type: ethernet
+                state: up
+                ipv4:
+                  enabled: true
+                  dhcp: true
+                ipv6:
+                  enabled: false
+
+      - hostName: "ranworker4.ptnr3.cert2.bos2.lab"
+        role: "master"
+        bmcAddress: "redfish-virtualmedia://192.168.73.22/redfish/v1/Systems/1"
+        bmcCredentialsName:
+          name: "masters-bmh-secret"
+        bootMACAddress: "b4:96:91:d6:c3:a4"
+        # Use UEFISecureBoot to enable secure boot for this node
+        bootMode: "UEFI"
+        rootDeviceHints:
+          hctl: "1:0:0:0"
+        nodeNetwork:
+          interfaces:
+            - name: ens10f0
+              macAddress: "b4:96:91:d6:c3:a4"
+          config:
+            interfaces:
+              - name: ens10f0
+                type: ethernet
+                state: up
+                ipv4:
+                  enabled: true
+                  dhcp: true
+                ipv6:
+                  enabled: false

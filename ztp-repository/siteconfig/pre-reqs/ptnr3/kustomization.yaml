@@ -1,0 +1,7 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - masters-bmc-credentials.yaml
+  - workers-bmc-credentials.yaml
+  - pull-secret.yaml
